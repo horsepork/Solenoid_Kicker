@@ -70,6 +70,7 @@ class SolenoidKicker{
             setKickState(true);
         }
 
+    
         void invertOutput(bool _outputInverted){ // if we end up running the output through a relay, say
             outputInverted = _outputInverted;
         }
