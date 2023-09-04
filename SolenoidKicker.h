@@ -13,7 +13,6 @@ class SolenoidKicker{
         SolenoidKicker(uint8_t _kickPin, BooleanInputBase* _kickerSensor){
             kickerOutputType = DIGITAL_WRITE_OUTPUT;
             kickerSensor = _kickerSensor;
-            kickerSensor = _kickerSensor;
             kickerStatus = NOT_KICKING;
         }
 

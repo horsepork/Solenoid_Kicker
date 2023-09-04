@@ -10,12 +10,11 @@ Debounced_DigitalRead kickerSensor(kickerSensorPin, INPUT_PULLUP);
 
 Debounced_DigitalRead otherKickerSensor(6, INPUT_PULLUP);
 
+SolenoidKicker digitalOutputKicker(digitalOutputPin, &kickerSensor.booleanBaseObject);
 
-SolenoidKicker digitalOutputKicker(digitalOutputPin, kickerSensor);
-
-Shift_Output shiftOutput(2, 3, 4, 1); // made up clock, load, and latch pins
+Shift_Output shiftOutput(2, 3, 4, 1); // made up clock, load, and latch pins, as well as num outputs
 #define SHIFT_OUT_KICK_INDEX 0
-SolenoidKicker shiftOutputKicker(&shiftOutput, SHIFT_OUT_KICK_INDEX, otherKickerSensor);
+SolenoidKicker shiftOutputKicker(&shiftOutput, SHIFT_OUT_KICK_INDEX, &otherKickerSensor.booleanBaseObject);
 
 void setup(){
     shiftOutput.begin();
