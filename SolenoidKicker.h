@@ -5,6 +5,7 @@
 #include "BooleanInputBase.h"
 #include "Shift_Input.h"
 #include "Shift_Output.h"
+#include "Debounced_DigitalRead.h"
 
 // forceKick() not implemented, not sure if needed
 
@@ -22,6 +23,22 @@ class SolenoidKicker{
             kickerOutputType = SHIFT_REGISTER_OUTPUT;
             kickerSensor = _kickerSensor;
             kickerStatus = NOT_KICKING;
+        }
+
+        SolenoidKicker(uint8_t _kickPin, Debounced_DigitalRead* reader){
+            SolenoidKicker(_kickPin, &reader->booleanBaseObject);
+        }
+
+        SolenoidKicker(Shift_Output* _shiftOutput, uint8_t _shiftOutputIndex, Debounced_DigitalRead* _reader){
+            SolenoidKicker(_shiftOutput, _shiftOutputIndex, &_reader->booleanBaseObject);
+        }
+
+        SolenoidKicker(uint8_t _kickPin, Shift_Input* _shiftInput, uint8_t _shiftInputIndex){
+            SolenoidKicker(_kickPin, &_shiftInput->booleanBaseObject[_shiftInputIndex]);
+        }
+
+        SolenoidKicker(Shift_Output* _shiftOutput, uint8_t _shiftOutputIndex, Shift_Input* _shiftInput, uint8_t _shiftInputIndex){
+            SolenoidKicker(_shiftOutput, _shiftOutputIndex, &_shiftInput->booleanBaseObject[_shiftInputIndex]);
         }
 
         void update(){
