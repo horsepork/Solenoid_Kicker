@@ -43,6 +43,7 @@ class SolenoidKicker{
 
         void update(){
             Serial.println(kickerSensor->read());
+            delay(100);
             switch(kickerStatus){
                 case NOT_KICKING:
                     if(kickState == HIGH && isEngaged()){
