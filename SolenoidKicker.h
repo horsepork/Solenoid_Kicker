@@ -11,6 +11,8 @@
 
 class SolenoidKicker{
     public:
+
+        Debounced_DigitalRead* sensor;
         SolenoidKicker(uint8_t _kickPin, BooleanInputBase* _kickerSensor){
             kickerOutputType = DIGITAL_WRITE_OUTPUT;
             kickerSensor = _kickerSensor;
@@ -30,6 +32,7 @@ class SolenoidKicker{
         }
 
         SolenoidKicker(Shift_Output* _shiftOutput, uint8_t _shiftOutputIndex, Debounced_DigitalRead* _reader){
+            sensor = _reader;
             SolenoidKicker(_shiftOutput, _shiftOutputIndex, &_reader->booleanBaseObject);
         }
 
@@ -44,6 +47,8 @@ class SolenoidKicker{
         void update(){
             Serial.print("Kicker sensor within kicker object -- ");
             Serial.println(kickerSensor->read());
+            Serial.print("debounced digital read object read -- ");
+            Serial.println(sensor->read());
             delay(100);
             switch(kickerStatus){
                 case NOT_KICKING:
