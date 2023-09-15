@@ -27,8 +27,8 @@ class SolenoidKicker{
             kickerStatus = NOT_KICKING;
         }
 
-        SolenoidKicker(uint8_t _kickPin, Debounced_DigitalRead* reader){
-            SolenoidKicker(_kickPin, &reader->booleanBaseObject);
+        SolenoidKicker(uint8_t _kickPin, Debounced_DigitalRead reader){
+            SolenoidKicker(_kickPin, &reader.booleanBaseObject);
         }
 
         SolenoidKicker(Shift_Output* _shiftOutput, uint8_t _shiftOutputIndex, Debounced_DigitalRead* _reader){
