@@ -42,6 +42,7 @@ class SolenoidKicker{
         }
 
         void update(){
+            Serial.print("Kicker sensor within kicker object -- ");
             Serial.println(kickerSensor->read());
             delay(100);
             switch(kickerStatus){
