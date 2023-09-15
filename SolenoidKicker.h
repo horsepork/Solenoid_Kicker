@@ -45,9 +45,7 @@ class SolenoidKicker{
             switch(kickerStatus){
                 case NOT_KICKING:
                     if(kickState == HIGH && isEngaged()){
-                        tone(2, 2000);
-                        delay(25);
-                        noTone(2);
+                        Serial.println("kicking now");
                         setKickOutputState(HIGH);
                         kickTimer = millis();
                         kickerStatus = KICKING;
@@ -55,20 +53,24 @@ class SolenoidKicker{
                     break;
                 case KICKING:
                     if(!isEngaged() || kickState == LOW){
+                        Serial.println("not engaged or kickstate set to low");
                         kickerStatus = NOT_KICKING;
                         setKickOutputState(LOW);
                     }
                     else if(millis() - kickTimer > kickLength){
                         kickerStatus = IN_BETWEEN_KICKS;
                         kickTimer = millis();
+                        Serial.println("in between kicks");
                     }
                     break;
                 case IN_BETWEEN_KICKS:
                     if(kickState == LOW){
+                        Serial.println("not kicking");
                         kickerStatus = NOT_KICKING;
                         setKickOutputState(LOW); // for safety, but otherwise unnecessary
                     }
                     else if(millis() - kickTimer > timeBetweenKicks){
+                        Serial.println("Kicking again");
                         kickerStatus = KICKING;
                         setKickOutputState(HIGH);
                         kickTimer = millis();
