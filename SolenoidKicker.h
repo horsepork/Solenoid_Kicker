@@ -33,7 +33,7 @@ class SolenoidKicker{
 
         SolenoidKicker(Shift_Output* _shiftOutput, uint8_t _shiftOutputIndex, Debounced_DigitalRead* _reader){
             sensor = _reader;
-            SolenoidKicker(_shiftOutput, _shiftOutputIndex, &_reader->booleanBaseObject);
+            SolenoidKicker(_shiftOutput, _shiftOutputIndex, &(_reader->booleanBaseObject));
         }
 
         SolenoidKicker(uint8_t _kickPin, Shift_Input* _shiftInput, uint8_t _shiftInputIndex){
