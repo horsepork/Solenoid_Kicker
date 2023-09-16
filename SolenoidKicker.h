@@ -14,33 +14,50 @@ class SolenoidKicker{
 
         SolenoidKicker(uint8_t _kickPin, BooleanInputBase* _kickerSensor){
             kickerOutputType = DIGITAL_WRITE_OUTPUT;
+            kickPin = _kickPin;
             kickerSensor = _kickerSensor;
             kickerStatus = NOT_KICKING;
         }
 
         SolenoidKicker(Shift_Output* _shiftOutput, uint8_t _shiftOutputIndex, BooleanInputBase* _kickerSensor){
+            kickerOutputType = SHIFT_REGISTER_OUTPUT;
             shiftOutput = _shiftOutput;
             shiftOutputIndex = _shiftOutputIndex;
-            kickerOutputType = SHIFT_REGISTER_OUTPUT;
             kickerSensor = _kickerSensor;
             kickerStatus = NOT_KICKING;
         }
 
         SolenoidKicker(uint8_t _kickPin, Debounced_DigitalRead reader){
-            SolenoidKicker(_kickPin, &reader.booleanBaseObject);
+            kickerOutputType = DIGITAL_WRITE_OUTPUT;
+            kickPin = _kickPin;
+            kickerSensor = &reader.booleanBaseObject;
+            kickerStatus = NOT_KICKING;
         }
 
         SolenoidKicker(Shift_Output* _shiftOutput, uint8_t _shiftOutputIndex, Debounced_DigitalRead _reader){
-            SolenoidKicker(_shiftOutput, _shiftOutputIndex, &_reader.booleanBaseObject);
+            kickerOutputType = SHIFT_REGISTER_OUTPUT;
+            shiftOutput = _shiftOutput;
+            shiftOutputIndex = _shiftOutputIndex;
+            kickerSensor = &_reader.booleanBaseObject;
+            kickerStatus = NOT_KICKING;
         }
 
         SolenoidKicker(uint8_t _kickPin, Shift_Input* _shiftInput, uint8_t _shiftInputIndex){
-            SolenoidKicker(_kickPin, &_shiftInput->booleanBaseObject[_shiftInputIndex]);
+            kickerOutputType = DIGITAL_WRITE_OUTPUT;
+            kickPin = _kickPin;
+            kickerSensor = &_shiftInput->booleanBaseObject[_shiftInputIndex];
+            kickerStatus = NOT_KICKING;
         }
 
         SolenoidKicker(Shift_Output* _shiftOutput, uint8_t _shiftOutputIndex, Shift_Input* _shiftInput, uint8_t _shiftInputIndex){
-            SolenoidKicker(_shiftOutput, _shiftOutputIndex, &_shiftInput->booleanBaseObject[_shiftInputIndex]);
+            kickerOutputType = SHIFT_REGISTER_OUTPUT;
+            shiftOutput = _shiftOutput;
+            shiftOutputIndex = _shiftOutputIndex;
+            kickerSensor = &_shiftInput->booleanBaseObject[_shiftInputIndex];
+            kickerStatus = NOT_KICKING;
         }
+
+
 
         void update(){
             Serial.print("Kicker sensor within kicker object -- ");
@@ -129,7 +146,7 @@ class SolenoidKicker{
         Shift_Output* shiftOutput = nullptr;
         uint8_t shiftOutputIndex;
         
-        BooleanInputBase* kickerSensor;
+        BooleanInputBase* kickerSensor = nullptr;
 
         enum {
             DIGITAL_WRITE_OUTPUT,
