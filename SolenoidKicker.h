@@ -72,11 +72,12 @@ class SolenoidKicker{
                     if(!isEngaged() || kickState == LOW){
                         kickerStatus = NOT_KICKING;
                         setKickOutputState(LOW);
+                        inBetweenKicksTimer = millis();
                     }
                     else if(millis() - kickTimer > kickLength){
                         setKickOutputState(LOW);
                         kickerStatus = IN_BETWEEN_KICKS;
-                        kickTimer = millis();
+                        inBetweenKicksTimer = millis();
                     }
                     break;
                 case IN_BETWEEN_KICKS:
@@ -84,7 +85,7 @@ class SolenoidKicker{
                         kickerStatus = NOT_KICKING;
                         setKickOutputState(LOW); // for safety, but otherwise unnecessary
                     }
-                    else if(millis() - kickTimer > timeBetweenKicks){
+                    else if(millis() - inBetweenKicksTimer > timeBetweenKicks){
                         kickerStatus = KICKING;
                         setKickOutputState(HIGH);
                         kickTimer = millis();
@@ -131,6 +132,7 @@ class SolenoidKicker{
         bool outputInverted = false;
 
         uint32_t kickTimer;
+        uint32_t inBetweenKicksTimer;
         uint16_t kickLength = 75;
         uint32_t timeBetweenKicks = 2000;
 
