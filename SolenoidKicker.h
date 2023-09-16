@@ -62,7 +62,7 @@ class SolenoidKicker{
         void update(){
             switch(kickerStatus){
                 case NOT_KICKING:
-                    if(kickState == HIGH && isEngaged()){
+                    if(kickState == HIGH && isEngaged() && (millis() - inBetweenKicksTimer > timeBetweenKicks){
                         setKickOutputState(HIGH);
                         kickTimer = millis();
                         kickerStatus = KICKING;
