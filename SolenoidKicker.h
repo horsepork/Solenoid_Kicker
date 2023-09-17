@@ -106,6 +106,10 @@ class SolenoidKicker{
             setKickState(false);
         }
 
+        bool isActivelyKicking(){
+            return activelyKicking;
+        }
+
         bool maxActivelyKickingNotExceeded(){
             return numActivelyKicking < maxActivelyKicking;
         }
