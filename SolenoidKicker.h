@@ -62,7 +62,7 @@ class SolenoidKicker{
         void update(){
             switch(kickerStatus){
                 case NOT_KICKING:
-                    if(kickState == HIGH && isEngaged() && (millis() - inBetweenKicksTimer > timeBetweenKicks){
+                    if(kickState == HIGH && isEngaged() && (millis() - inBetweenKicksTimer > timeBetweenKicks)){
                         setKickOutputState(HIGH);
                         kickTimer = millis();
                         kickerStatus = KICKING;
@@ -143,6 +143,9 @@ class SolenoidKicker{
         
         BooleanInputBase* kickerSensor = nullptr;
 
+        static uint8_t numCurrentlyKicking;
+        static uint8_t maxConcurrentlyKicking;
+
         enum {
             DIGITAL_WRITE_OUTPUT,
             SHIFT_REGISTER_OUTPUT
@@ -166,9 +169,22 @@ class SolenoidKicker{
                     shiftOutput->write(shiftOutputIndex, newState);
                     break;
             }
+            if(newState){
+                numCurrentlyKicking++;
+            }
+            else{
+                numCurrentlyKicking--;
+            }
+        }
+
+        static void setMaxCurrentlyKicking(uint8_t newMax){
+            maxConcurrentlyKicking = newMax;
         }
 
 
 };
+
+uint8_t SolenoidKicker::numCurrentlyKicking = 0;
+uint8_t SolenoidKicker::maxConcurrentlyKicking = 1;
 
 #endif
