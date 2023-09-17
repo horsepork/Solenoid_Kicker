@@ -62,7 +62,7 @@ class SolenoidKicker{
         void update(){
             switch(kickerStatus){
                 case NOT_KICKING:
-                    if(kickState == HIGH && isEngaged() && (millis() - inBetweenKicksTimer > timeBetweenKicks)){
+                    if(kickState == HIGH && isEngaged() && (millis() - inBetweenKicksTimer > timeBetweenKicks) && maxActivelyKickingNotExceeded()){
                         setKickOutputState(HIGH);
                         kickTimer = millis();
                         kickerStatus = KICKING;
@@ -85,7 +85,7 @@ class SolenoidKicker{
                         kickerStatus = NOT_KICKING;
                         setKickOutputState(LOW); // for safety, but otherwise unnecessary
                     }
-                    else if(millis() - inBetweenKicksTimer > timeBetweenKicks){
+                    else if(millis() - inBetweenKicksTimer > timeBetweenKicks && maxActivelyKickingNotExceeded()){
                         kickerStatus = KICKING;
                         setKickOutputState(HIGH);
                         kickTimer = millis();
@@ -106,6 +106,9 @@ class SolenoidKicker{
             setKickState(false);
         }
 
+        bool maxActivelyKickingNotExceeded(){
+            return numActivelyKicking < maxActivelyKicking;
+        }
     
         void invertOutput(bool _outputInverted){ // if we end up running the output through a relay, say
             outputInverted = _outputInverted;
@@ -130,6 +133,7 @@ class SolenoidKicker{
     private:
         bool kickState = LOW;
         bool outputInverted = false;
+        bool activelyKicking = false;
 
         uint32_t kickTimer;
         uint32_t inBetweenKicksTimer;
@@ -143,8 +147,8 @@ class SolenoidKicker{
         
         BooleanInputBase* kickerSensor = nullptr;
 
-        static uint8_t numCurrentlyKicking;
-        static uint8_t maxConcurrentlyKicking;
+        static int numActivelyKicking;
+        static uint8_t maxActivelyKicking;
 
         enum {
             DIGITAL_WRITE_OUTPUT,
@@ -158,6 +162,17 @@ class SolenoidKicker{
         } kickerStatus;
 
         void setKickOutputState(bool newState){
+            if(activelyKicking && newState == LOW){
+                activelyKicking = false;
+                numActivelyKicking--;
+                if(numActivelyKicking < 0){
+                    numActivelyKicking = 0;
+                }
+            }
+            else if(!activelyKicking && newState == HIGH){
+                activelyKicking = true;
+                numActivelyKicking++;
+            }
             if(outputInverted){
                 newState = !newState;
             }
@@ -169,22 +184,16 @@ class SolenoidKicker{
                     shiftOutput->write(shiftOutputIndex, newState);
                     break;
             }
-            if(newState){
-                numCurrentlyKicking++;
-            }
-            else{
-                numCurrentlyKicking--;
-            }
         }
 
-        static void setMaxCurrentlyKicking(uint8_t newMax){
-            maxConcurrentlyKicking = newMax;
+        static void setMaxActivelyKicking(uint8_t newMax){
+            maxActivelyKicking = newMax;
         }
 
 
 };
 
-uint8_t SolenoidKicker::numCurrentlyKicking = 0;
-uint8_t SolenoidKicker::maxConcurrentlyKicking = 1;
+int SolenoidKicker::numActivelyKicking = 0;
+uint8_t SolenoidKicker::maxActivelyKicking = 1;
 
 #endif
