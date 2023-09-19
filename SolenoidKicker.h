@@ -150,7 +150,7 @@ class SolenoidKicker{
         uint8_t shiftOutputIndex;
         
         BooleanInputBase* kickerSensor = nullptr;
-
+    
         static int numActivelyKicking;
         static uint8_t maxActivelyKicking;
 
