@@ -62,10 +62,18 @@ class SolenoidKicker{
         void update(){
             switch(kickerStatus){
                 case NOT_KICKING:
-                    if(kickState == HIGH && isEngaged() && (millis() - inBetweenKicksTimer > timeBetweenKicks) && maxActivelyKickingNotExceeded()){
-                        setKickOutputState(HIGH);
-                        kickTimer = millis();
-                        kickerStatus = KICKING;
+                    if(kickState == HIGH && isEngaged()){
+                        if(newlyKicked && (millis() - inBetweenKicksTimer > timeBetweenKicks) && maxActivelyKickingNotExceeded()){
+                            setKickOutputState(HIGH);
+                            kickTimer = millis();
+                            kickerStatus = KICKING;
+                        }
+                        else{
+                            kickerStatus = IN_BETWEEN_KICKS;
+                            inBetweenKicksTimer = millis() - timeBetweenKicks/2; // so it will wait around 1000 ms before trying to kick
+                        }
+                        newlyKicked = false;
+                        
                     }
                     break;
                 case KICKING:
@@ -83,7 +91,7 @@ class SolenoidKicker{
                 case IN_BETWEEN_KICKS:
                     if(kickState == LOW || !isEngaged()){
                         kickerStatus = NOT_KICKING;
-                        setKickOutputState(LOW); // for safety, but otherwise unnecessary
+                        digitalWriteKickPin(LOW); // calling this instead of setKickOutputState so that the current num active kickers stays correct
                     }
                     else if(millis() - inBetweenKicksTimer > timeBetweenKicks && maxActivelyKickingNotExceeded()){
                         kickerStatus = KICKING;
@@ -96,6 +104,9 @@ class SolenoidKicker{
 
         void setKickState(bool newKickState){
             kickState = newKickState;
+            if(kickState){
+                newlyKicked = true;
+            }
         }
 
         void kick(){
@@ -138,6 +149,7 @@ class SolenoidKicker{
         bool kickState = LOW;
         bool outputInverted = false;
         bool activelyKicking = false;
+        bool newlyKicked = false;
 
         uint32_t kickTimer;
         uint32_t inBetweenKicksTimer;
@@ -177,6 +189,10 @@ class SolenoidKicker{
                 activelyKicking = true;
                 numActivelyKicking++;
             }
+            digitalWriteKickPin(newState);
+        }
+
+        void digitalWriteKickPin(bool newState){
             if(outputInverted){
                 newState = !newState;
             }
