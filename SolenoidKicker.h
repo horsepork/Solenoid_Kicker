@@ -73,7 +73,6 @@ class SolenoidKicker{
                             inBetweenKicksTimer = millis() - timeBetweenKicks/2; // so it will wait around 1000 ms before trying to kick
                         }
                         newlyKicked = false;
-                        
                     }
                     break;
                 case KICKING:
@@ -103,9 +102,11 @@ class SolenoidKicker{
         }
 
         void setKickState(bool newKickState){
-            kickState = newKickState;
-            if(kickState){
-                newlyKicked = true;
+            if(kickState != newKickState){
+                kickState = newKickState;
+                if(kickState){
+                    newlyKicked = true;
+                }
             }
         }
 
