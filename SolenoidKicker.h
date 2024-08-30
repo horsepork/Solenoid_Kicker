@@ -62,7 +62,7 @@ class SolenoidKicker{
         void update(){
             switch(kickerStatus){
                 case NOT_KICKING:
-                    if(kickState == HIGH && isEngaged()){
+                    if(kickState == HIGH && (isEngaged() || newlyKicked){
                         if(newlyKicked && (millis() - inBetweenKicksTimer > timeBetweenKicks) && maxActivelyKickingNotExceeded()){
                             setKickOutputState(HIGH);
                             kickTimer = millis();
@@ -72,23 +72,24 @@ class SolenoidKicker{
                             kickerStatus = IN_BETWEEN_KICKS;
                             inBetweenKicksTimer = millis() - timeBetweenKicks/2; // so it will wait around 1000 ms before trying to kick
                         }
-                        newlyKicked = false;
                     }
                     break;
                 case KICKING:
-                    if(!isEngaged() || kickState == LOW){
+                    if(kickState == LOW || (!isEngaged() && !newlyKicked)){
                         kickerStatus = NOT_KICKING;
                         setKickOutputState(LOW);
                         inBetweenKicksTimer = millis();
+                        newlyKicked = false;
                     }
                     else if(millis() - kickTimer > kickLength){
                         setKickOutputState(LOW);
                         kickerStatus = IN_BETWEEN_KICKS;
                         inBetweenKicksTimer = millis();
+                        newlyKicked = false;
                     }
                     break;
                 case IN_BETWEEN_KICKS:
-                    if(kickState == LOW || !isEngaged()){
+                    if(kickState == LOW || (!isEngaged() && !newlyKicked)){
                         kickerStatus = NOT_KICKING;
                         digitalWriteKickPin(LOW); // calling this instead of setKickOutputState so that the current num active kickers stays correct
                     }
@@ -156,6 +157,8 @@ class SolenoidKicker{
         uint32_t inBetweenKicksTimer;
         uint16_t kickLength = 75;
         uint32_t timeBetweenKicks = 2000;
+
+
 
         uint8_t kickPin;
 
